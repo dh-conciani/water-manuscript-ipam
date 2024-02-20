@@ -48,16 +48,49 @@ for(i in 1:length(unique(data$municipality))) {
     ## compute relative loss
     x$relative_change <- c(NA, round((x$area[2] - x$area[1]) / x$area[1] * 100, digits=2))
     ## isnert label
-    x$class <- 'Native Vegetation'
+    x$class <- 'Irrigation'
     ## bind
-    lulcc <- rbind(lulcc, x)
+    irrigation <- rbind(irrigation, x)
+    rm(x)
+    next
   }
   
   ## if only start exists, fill end with zero
   if (unique(x$year) == 1985) {
+    ## build line 2
+    x[2,] <- x; x$year[2] <- 2022; x$area[2] <- 0
+    ## compute aboslute difference
+    x$absolute_change <-  c(NA, x$area[2] - x$area[1])
+    ## compute relative loss
+    x$relative_change <- c(NA, round((x$area[2] - x$area[1]) / x$area[1] * 100, digits=2))
+    ## isnert label
+    x$class <- 'Irrigation'
+    ## bind
+    irrigation <- rbind(irrigation, x)
+    rm(x)
+    next
     
   }
   
+  if (unique(x$year) == 2022) {
+    ## build line 2
+    x[2,] <- x; x$year[2] <- 1985; x$area[2] <- 0
+    ## compute aboslute difference
+    x$absolute_change <-  c(x$area[1] - x$area[2], NA)
+    ## compute relative loss
+    x$relative_change <- c(round((x$area[1] - x$area[2]) / x$area[2] * 100, digits=2), NA)
+    ## isnert label
+    x$class <- 'Irrigation'
+    ## bind
+    irrigation <- rbind(irrigation, x)
+    rm(x)
+    next
+    
+  }
+  
+}
 
-}; rm(x)
+## export as xlsx
+write.xlsx(irrigation, file = './output/irrigation.xlsx', sheetName = "IRRIGATION",
+           row.names= FALSE, showNA= FALSE)
 
